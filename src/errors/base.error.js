@@ -1,4 +1,5 @@
 
+
 class BaseError extends Error {
 
     constructor(name, statusCode, message, details) {
