@@ -15,6 +15,6 @@ v1Routes.get('/ping', PingCheckController);
  * api/v1/users
  */
 
-v1Routes.use('/signup', userRoutes);
+v1Routes.use('/user', userRoutes);
 
 module.exports = v1Routes;

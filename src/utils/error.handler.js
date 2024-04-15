@@ -6,7 +6,6 @@ const { ErrorResponse } = require('./common');
 
 function errorHandler(err, req, res, next) {
 
-    console.log(typeof err);
 
     if (err instanceof BaseError) {
 

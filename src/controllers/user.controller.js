@@ -4,7 +4,7 @@ const { SuccessResponse } = require('../utils/common/');
 
 
 /**
- * POST Request /api/v1/signup/
+ * POST Request /api/v1/user/signup/
  * Request Body -> {name:"Manoj Kumar", email:"a@b.com",password:'123455'}
  */
 

@@ -8,21 +8,21 @@ const userRouter = express.Router();
 
 
 /**
- * /api/v1/signup/ping
+ * /api/v1/user/ping
  */
 
 userRouter.get('/ping', PingCheckController);
 
 
 /**
- * /api/v1/signup/
+ * /api/v1/user/signup/
  * 
  * POST Request
  * 
  * Request Body -> {name:"Manoj Kumar", email:"a@b.com",password:'123455'}
  */
 
-userRouter.post('/',
+userRouter.post('/signup',
     UserMiddlewares.validateCreateRequest,
     UserController.createUser
 )
