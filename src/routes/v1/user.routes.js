@@ -15,16 +15,30 @@ userRouter.get('/ping', PingCheckController);
 
 
 /**
- * /api/v1/user/signup/
+ * /api/v1/user/register/
  * 
  * POST Request
  * 
  * Request Body -> {name:"Manoj Kumar", email:"a@b.com",password:'123455'}
  */
 
-userRouter.post('/signup',
+userRouter.post('/register',
     UserMiddlewares.validateCreateRequest,
-    UserController.createUser
+    UserController.register
+)
+
+
+/**
+ * /api/v1/user/login/
+ * 
+ * POST Request
+ * 
+ * Request Body -> {email:"a@b.com",password:'123455'}
+ */
+
+userRouter.post('/login',
+    UserMiddlewares.validateLoginRequest,
+    UserController.login
 )
 
 

@@ -3,12 +3,13 @@ const { UserService } = require('../services');
 const { SuccessResponse } = require('../utils/common/');
 
 
+
 /**
- * POST Request /api/v1/user/signup/
+ * POST Request /api/v1/user/register/
  * Request Body -> {name:"Manoj Kumar", email:"a@b.com",password:'123455'}
  */
 
-async function createUser(req, res, next) {
+async function register(req, res, next) {
 
     try {
         const user = await UserService.createUser({
@@ -18,7 +19,7 @@ async function createUser(req, res, next) {
         });
 
         SuccessResponse.data = user;
-        SuccessResponse.message = "Successfully signed up";
+        SuccessResponse.message = "Successfully created account";
         SuccessResponse.statusCode = StatusCodes.CREATED;
 
         return res
@@ -30,8 +31,33 @@ async function createUser(req, res, next) {
     }
 }
 
+/**
+ * POST Request /api/v1/user/login/
+ * Request Body -> {email:"a@b.com",password:'123455'}
+ */
 
+async function login(req, res, next) {
+
+    try {
+        const response = await UserService.signIn({
+            email: req.body.email,
+            password: req.body.password
+        });
+
+        SuccessResponse.data = response;
+        SuccessResponse.message = "Successfully signed in";
+        SuccessResponse.statusCode = StatusCodes.OK;
+
+        return res
+            .status(SuccessResponse.statusCode)
+            .json(SuccessResponse);
+    }
+    catch (error) {
+        next(error);
+    }
+}
 
 module.exports = {
-    createUser,
+    register,
+    login,
 };
