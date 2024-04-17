@@ -4,7 +4,7 @@ function pingCheck(req, res) {
 
     return res.status(StatusCodes.OK).json({
         success: true,
-        message: "Ping Check successfull",
+        message: "API is live",
         error: [],
         data: []
     });

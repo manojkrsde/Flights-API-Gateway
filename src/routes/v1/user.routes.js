@@ -15,6 +15,16 @@ userRouter.get('/ping', PingCheckController);
 
 
 /**
+ * /api/v1/user/info
+ */
+
+userRouter.get('/info',
+    UserMiddlewares.checkAuth
+    , PingCheckController);
+
+
+
+/**
  * /api/v1/user/register/
  * 
  * POST Request

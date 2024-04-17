@@ -1,5 +1,6 @@
 const { StatusCodes } = require('http-status-codes');
 const { AppError } = require("../errors");
+const { UserService } = require('../services');
 
 function validateCreateRequest(req, res, next) {
 
@@ -45,9 +46,22 @@ function validateLoginRequest(req, res, next) {
     next();
 }
 
+async function checkAuth(req, res, next) {
+    try {
+        const response = await UserService.isAuthenticated(req.headers['x-access-token']);
+        if (response) {
+            req.user = response; // setting the user id in the req object
+            next();
+        }
+    } catch (error) {
 
+        next(error);
+    }
+
+}
 
 module.exports = {
     validateCreateRequest,
-    validateLoginRequest
+    validateLoginRequest,
+    checkAuth
 };

@@ -87,9 +87,60 @@ async function signIn(data) {
     }
 }
 
+async function isAuthenticated(token) {
+
+    try {
+
+        if (!token) {
+            throw new AppError(StatusCodes.BAD_REQUEST, 'Authentication Failed', ['Missing JWT token']);
+        }
+
+        const response = Auth.verifyToken(token);
+
+        const user = await userRepository.get(response.id);
+
+        if (!user) {
+            throw new AppError(StatusCodes.BAD_REQUEST, 'Authentication Failed', ['No user found']);
+        }
+
+        return user.id;
+
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        if (error.name == 'JsonWebTokenError') {
+            throw new AppError(StatusCodes.BAD_REQUEST, 'Authentication Failed', ['Invalid JWT token']);
+        }
+
+        if (error.name == 'TokenExpiredError') {
+            throw new AppError(StatusCodes.BAD_REQUEST, 'Authentication Failed', ['JWT token expired']);
+        }
+
+        if (error.name == 'SequelizeValidationError') {
+
+            let explanation = [];
+
+            error.errors.forEach((err) => {
+                explanation.push(err.message);
+            });
+
+
+            Logger.error({ message: "Something went wrong doing validation", error: error });
+
+            throw new AppError(StatusCodes.BAD_REQUEST, "Something went wrong doing validation", explanation);
+
+        }
+
+        Logger.error({ message: "Something went wrong while authenticating", error: error });
+        throw new InternalServerError("Authentication failed");
+    }
+}
 
 
 module.exports = {
     createUser,
-    signIn
+    signIn,
+    isAuthenticated
 };

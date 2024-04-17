@@ -14,7 +14,12 @@ function generateToken(input) {
     return jwt.sign(input, ServerConfig.JWT_SECRET, { expiresIn: ServerConfig.JWT_EXPIRY });
 }
 
+function verifyToken(token) {
+    return jwt.verify(token, ServerConfig.JWT_SECRET);
+}
+
 module.exports = {
     checkPassword,
-    generateToken
+    generateToken,
+    verifyToken
 }
