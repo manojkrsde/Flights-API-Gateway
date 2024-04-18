@@ -7,6 +7,9 @@ const errorHandler = require("./utils/error.handler");
 const { sequelize } = require('./models');
 const { IdentityReset } = require("./utils/helpers/");
 
+const rateLimit = require('express-rate-limit');
+
+
 const app = express();
 
 
@@ -17,6 +20,21 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.text());
+
+/**
+ * Rate Limiter
+ */
+const limiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    limit: 10, // Limit each IP to 100 requests per `window` (here, per 15 minutes).  
+})
+
+
+app.use(limiter);
+
+/**
+ * Main Api Calls
+ */
 
 app.use('/api', apiRoutes);
 
