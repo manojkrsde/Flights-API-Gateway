@@ -82,8 +82,29 @@ async function addRoleToUser(req, res, next) {
     }
 }
 
+async function revokeUserRole(req, res, next) {
+    try {
+        const user = await UserService.revokeRoleFromUser({
+            role: req.body.role,
+            id: req.body.id
+        });
+
+        SuccessResponse.data = user;
+        SuccessResponse.message = "Revoked role successfully";
+        SuccessResponse.statusCode = StatusCodes.OK;
+        return res
+            .status(SuccessResponse.statusCode)
+            .json(SuccessResponse);
+
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     register,
     login,
-    addRoleToUser
+    addRoleToUser,
+    revokeUserRole
 };

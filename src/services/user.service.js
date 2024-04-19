@@ -167,7 +167,7 @@ async function addRoleToUser(data) {
         if (!user) {
             throw new AppError(StatusCodes.NOT_FOUND, 'Cannot add role', [`No user found for the given id : ${data.id}`]);
         }
-        console.log("Called");
+
 
         const role = await roleRepository.getRoleByName(data.role);
 
@@ -193,6 +193,63 @@ async function addRoleToUser(data) {
         }
 
         return await userRoleRepository.create(user_role);
+
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        if (error.name == 'SequelizeValidationError') {
+
+            let explanation = [];
+
+            error.errors.forEach((err) => {
+                explanation.push(err.message);
+            });
+
+
+            Logger.error({ message: "Something went wrong doing validation", error: error });
+
+            throw new AppError(StatusCodes.BAD_REQUEST, "Something went wrong doing validation", explanation);
+
+        }
+
+        Logger.error({ message: "Something went wrong while adding role to user", error: error });
+        throw new InternalServerError("Cannot add role to user");
+    }
+}
+
+async function revokeRoleFromUser(data) {
+
+    try {
+
+        const user = await userRepository.get(data.id);
+
+        if (!user) {
+            throw new AppError(StatusCodes.NOT_FOUND, 'User not found', [`No user found for the given id : ${data.id}`]);
+        }
+
+
+        const role = await roleRepository.getRoleByName(data.role);
+
+        if (!role) {
+            throw new AppError(StatusCodes.NOT_FOUND, 'Cannot find role', [`No role found for the given role : ${data.role}`]);
+        }
+
+        if (role.name === Enums.USER_ROLES.CUSTOMER) {
+            throw new AppError(StatusCodes.BAD_REQUEST, 'Cannot revoke role', [`Customer role cannot be revoked`]);
+        }
+
+        /**
+         * If user already has the role
+         */
+        const isRolePresent = await userRoleRepository.getUserRole(user.id, role.id);
+
+        if (!isRolePresent) {
+            throw new AppError(StatusCodes.BAD_REQUEST, `User Role Missing`, [`User is not having ${role.name} role`]);
+        }
+
+        return await userRoleRepository.destroy(isRolePresent.id);
 
     } catch (error) {
         if (error instanceof AppError) {
@@ -278,5 +335,6 @@ module.exports = {
     signIn,
     isAuthenticated,
     addRoleToUser,
-    isAdmin
+    isAdmin,
+    revokeRoleFromUser
 };

@@ -54,17 +54,32 @@ userRouter.post('/login',
 
 
 /**
- * /api/v1/user/login/
+ * /api/v1/user/role/
  * 
  * POST Request
  * 
- * Request Body -> {email:"a@b.com",password:'123455'}
+ * Request Body -> {role:"admin",id:1}
  */
 
 userRouter.post('/role',
     UserMiddlewares.checkAuth,
     UserMiddlewares.isAdmin,
     UserController.addRoleToUser
+)
+
+
+/**
+ * /api/v1/user/role/
+ * 
+ * DELETE Request
+ * 
+ * Request Body -> {role:"admin",id:1}
+ */
+
+userRouter.delete('/role',
+    UserMiddlewares.checkAuth,
+    UserMiddlewares.isAdmin,
+    UserController.revokeUserRole
 )
 
 module.exports = userRouter;
