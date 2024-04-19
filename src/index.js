@@ -10,6 +10,8 @@ const { IdentityReset } = require("./utils/helpers/");
 const rateLimit = require('express-rate-limit');
 const { createProxyMiddleware, fixRequestBody } = require('http-proxy-middleware');
 
+const { UserMiddlewares } = require('./middlewares');
+
 
 const app = express();
 
@@ -38,6 +40,8 @@ app.use(limiter);
 
 
 app.use('/flightService',
+    UserMiddlewares.checkAuth,
+    UserMiddlewares.isAdmin,
     createProxyMiddleware({
         target: ServerConfig.FLIGHT_SERVICE,
         changeOrigin: true,
@@ -45,10 +49,13 @@ app.use('/flightService',
         on: {
             proxyReq: fixRequestBody,
         }
-    }),
+    })
 );
 
 app.use('/bookingService',
+
+    UserMiddlewares.checkAuth
+    ,
     createProxyMiddleware({
         target: ServerConfig.BOOKING_SERVICE,
         changeOrigin: true,
@@ -56,7 +63,7 @@ app.use('/bookingService',
         on: {
             proxyReq: fixRequestBody,
         }
-    }),
+    })
 );
 
 app.use('/api', apiRoutes);

@@ -60,7 +60,6 @@ async function checkAuth(req, res, next) {
 
 }
 
-
 async function isAdmin(req, res, next) {
     try {
         const response = await UserService.isAdmin(req.user);
