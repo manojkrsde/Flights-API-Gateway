@@ -158,8 +158,125 @@ async function isAuthenticated(token) {
 }
 
 
+async function addRoleToUser(data) {
+
+    try {
+
+        const user = await userRepository.get(data.id);
+
+        if (!user) {
+            throw new AppError(StatusCodes.NOT_FOUND, 'Cannot add role', [`No user found for the given id : ${data.id}`]);
+        }
+        console.log("Called");
+
+        const role = await roleRepository.getRoleByName(data.role);
+
+        if (!role) {
+            throw new AppError(StatusCodes.NOT_FOUND, 'Cannot find role', [`No role found for the given role : ${data.role}`]);
+        }
+
+        /**
+         * creating user role object, in users table we need user_id and role_id
+         */
+        const user_role = {
+            user_id: user.id,
+            role_id: role.id
+        }
+
+        /**
+         * If user already has the role
+         */
+        const alreadyHasRole = await userRoleRepository.getUserRole(user.id, role.id);
+
+        if (alreadyHasRole) {
+            throw new AppError(StatusCodes.BAD_REQUEST, `Role already associated`, [`User is already ${role.name}`]);
+        }
+
+        return await userRoleRepository.create(user_role);
+
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        if (error.name == 'SequelizeValidationError') {
+
+            let explanation = [];
+
+            error.errors.forEach((err) => {
+                explanation.push(err.message);
+            });
+
+
+            Logger.error({ message: "Something went wrong doing validation", error: error });
+
+            throw new AppError(StatusCodes.BAD_REQUEST, "Something went wrong doing validation", explanation);
+
+        }
+
+        Logger.error({ message: "Something went wrong while adding role to user", error: error });
+        throw new InternalServerError("Cannot add role to user");
+    }
+}
+
+async function isAdmin(id) {
+
+    try {
+
+        console.log("Called isAdmin Service")
+
+        const user = await userRepository.get(id);
+
+        if (!user) {
+            throw new AppError(StatusCodes.NOT_FOUND, 'User not found', [`No user found for the given id : ${id}`]);
+        }
+
+        const adminRole = await roleRepository.getRoleByName(Enums.USER_ROLES.ADMIN);
+
+        if (!adminRole) {
+            throw new AppError(StatusCodes.NOT_FOUND, 'Cannot find role', [`No role found for the admin `]);
+        }
+
+        /**
+         * Updating user role
+         */
+        const userRole = await userRoleRepository.getUserRole(user.id, adminRole.id);
+
+        if (!userRole) {
+            throw new AppError(StatusCodes.UNAUTHORIZED, 'User not authorized', [`User is not authorized to perform this action, admin privilages required`]);
+        }
+
+        return userRole.user_id === user.id;
+
+    } catch (error) {
+        if (error instanceof AppError) {
+            throw error;
+        }
+
+        if (error.name == 'SequelizeValidationError') {
+
+            let explanation = [];
+
+            error.errors.forEach((err) => {
+                explanation.push(err.message);
+            });
+
+
+            Logger.error({ message: "Something went wrong doing validation", error: error });
+
+            throw new AppError(StatusCodes.BAD_REQUEST, "Something went wrong doing validation", explanation);
+
+        }
+
+        Logger.error({ message: "Something went wrong while adding role to user", error: error });
+        throw new InternalServerError("No user found");
+    }
+}
+
 module.exports = {
     createUser,
     signIn,
-    isAuthenticated
+    isAuthenticated,
+    addRoleToUser,
+    isAdmin
 };

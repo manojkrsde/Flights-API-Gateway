@@ -12,6 +12,18 @@ class UserRoleRepository extends CrudRepository {
         super(user_role);
     }
 
+    async getUserRole(userId, roleId) {
+
+        const userRole = await this.model.findOne({
+            where: {
+                user_id: userId,
+                role_id: roleId
+            }
+        });
+
+        return userRole;
+    }
+
 }
 
 module.exports = UserRoleRepository;

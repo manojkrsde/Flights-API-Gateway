@@ -32,7 +32,8 @@ userRouter.get('/info',
  * Request Body -> {name:"Manoj Kumar", email:"a@b.com",password:'123455'}
  */
 
-userRouter.post('/register',
+userRouter.post(
+    '/register',
     UserMiddlewares.validateCreateRequest,
     UserController.register
 )
@@ -51,5 +52,19 @@ userRouter.post('/login',
     UserController.login
 )
 
+
+/**
+ * /api/v1/user/login/
+ * 
+ * POST Request
+ * 
+ * Request Body -> {email:"a@b.com",password:'123455'}
+ */
+
+userRouter.post('/role',
+    UserMiddlewares.checkAuth,
+    UserMiddlewares.isAdmin,
+    UserController.addRoleToUser
+)
 
 module.exports = userRouter;

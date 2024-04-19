@@ -60,8 +60,22 @@ async function checkAuth(req, res, next) {
 
 }
 
+
+async function isAdmin(req, res, next) {
+    try {
+        const response = await UserService.isAdmin(req.user);
+        if (!response) {
+            throw new AppError(StatusCodes.UNAUTHORIZED, 'Cannot add role.', ['User not authorized for this action'])
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     validateCreateRequest,
     validateLoginRequest,
-    checkAuth
+    checkAuth,
+    isAdmin
 };

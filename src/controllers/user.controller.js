@@ -57,7 +57,33 @@ async function login(req, res, next) {
     }
 }
 
+/**
+ * POST Request /api/v1/user/role/
+ * Request Body -> {id:1,role:'admin'}
+ */
+
+async function addRoleToUser(req, res, next) {
+    try {
+        const user = await UserService.addRoleToUser({
+            role: req.body.role,
+            id: req.body.id
+        });
+
+        SuccessResponse.data = user;
+        SuccessResponse.message = "Added role successfully";
+        SuccessResponse.statusCode = StatusCodes.OK;
+        return res
+            .status(SuccessResponse.statusCode)
+            .json(SuccessResponse);
+
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     register,
     login,
+    addRoleToUser
 };
