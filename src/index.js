@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser = require('body-parser')
 
 const { ServerConfig } = require("./config");
 
@@ -20,9 +21,14 @@ const app = express();
  * adding body parser middlewares
  */
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.text());
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.text());
+app.use(bodyParser.raw());
+
+
+
 
 /**
  * Rate Limiter
@@ -60,11 +66,36 @@ app.use('/bookingService',
         target: ServerConfig.BOOKING_SERVICE,
         changeOrigin: true,
         pathRewrite: { '^/bookingService': '/' },
+
         on: {
-            proxyReq: fixRequestBody,
+
+            proxyReq: (proxyReq, req, res) => {
+
+                if (req.user) {
+                    proxyReq.setHeader('x-user-data', JSON.stringify(req.user));
+                }
+
+                if (req.body) {
+
+                    let body = new Object();
+                    body = req.body;
+
+                    // URI encode JSON object
+                    body = Object.keys(body)
+                        .map(function (key) {
+                            return encodeURIComponent(key) + '=' + encodeURIComponent(body[key]);
+                        })
+                        .join('&');
+
+                    proxyReq.write(body);
+                }
+
+                fixRequestBody;
+            }
         }
     })
 );
+
 
 app.use('/api', apiRoutes);
 

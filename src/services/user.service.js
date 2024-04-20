@@ -122,7 +122,13 @@ async function isAuthenticated(token) {
             throw new AppError(StatusCodes.BAD_REQUEST, 'Authentication Failed', ['No user found']);
         }
 
-        return user.id;
+        const userResponse = {
+            id: user.dataValues.id,
+            name: user.dataValues.name,
+            email: user.dataValues.email
+        }
+
+        return userResponse;
 
     } catch (error) {
         if (error instanceof AppError) {

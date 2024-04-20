@@ -50,7 +50,7 @@ async function checkAuth(req, res, next) {
     try {
         const response = await UserService.isAuthenticated(req.headers['x-access-token']);
         if (response) {
-            req.user = response; // setting the user id in the req object
+            req.user = response;
             next();
         }
     } catch (error) {
@@ -62,7 +62,7 @@ async function checkAuth(req, res, next) {
 
 async function isAdmin(req, res, next) {
     try {
-        const response = await UserService.isAdmin(req.user);
+        const response = await UserService.isAdmin(req.user.id);
         if (!response) {
             throw new AppError(StatusCodes.UNAUTHORIZED, 'Cannot add role.', ['User not authorized for this action'])
         }
