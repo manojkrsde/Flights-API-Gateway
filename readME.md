@@ -232,11 +232,11 @@ The project uses a relational database to store data for various entities:
 
 The API endpoints use different `HTTP` methods(`GET`, `POST`, `PUT`, `DELETE`) and follow `RESTful` design principles.
 
----
-
 The project provides a variety of API endpoints for different functionalities:
 
 - **API GATEWAY BASE ADDRESS** : `http:localhost:3001/`
+
+---
 
 - **User Authentication**: Endpoints for user registration, login, and authentication management.
 
