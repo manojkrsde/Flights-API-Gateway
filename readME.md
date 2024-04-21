@@ -169,6 +169,8 @@ The `src` folder houses all the actual source code of the project, excluding any
 
 The project uses a relational database to store data for various entities:
 
+**DATABASE NAME** : `FlightsDB`
+
 ---
 
 - **Users** 👤: Stores user information such as name, email, hashed password, etc.
