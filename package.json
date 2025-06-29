@@ -4,7 +4,8 @@
   "description": "A basic starter boiler plate for node js project ",
   "main": "index.js",
   "scripts": {
-    "start": "node --watch ./src/index.js"
+    "start": "node ./src/index.js",
+    "dev": "node --watch ./src/index.js"
   },
   "author": "@Manoj Kumar",
   "license": "ISC",
